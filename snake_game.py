@@ -1,8 +1,14 @@
 # Snake Game in Python3
 # By ThongLe
 
+# Import the libraries
 import pygame
 import time
+import random
+
+# Import the classes
+from classes.food import Food
+from classes.snake import Snake
 
 # Setup colors
 background_color = ( 45, 45, 45 )
@@ -26,6 +32,10 @@ def display_text( content, color ) :
     text = font_style.render( content, True, color )
     screen.blit( text, [ 100, 200 ] )
 
+# Function displays the text
+def display_score( content, color ) :
+    text = font_style.render( content, True, color )
+    screen.blit( text, [ 10, 50 ] )
 
 # Declare the defaul position of the snake
 x_pos = y_pos = 200
@@ -33,6 +43,12 @@ x_pos_update = y_pos_update = 0
 
 # Setup the clock
 clock = pygame.time.Clock()
+
+# Setup Food
+food = Food( [ random.randrange( 0, 400, 10 ), random.randrange( 0, 400, 10 ) ] )
+
+# Setup the Snake
+snake = Snake( [200, 200] )
 
 while not game_over:
 
@@ -42,36 +58,42 @@ while not game_over:
             game_over = True
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                x_pos_update = -10
-                y_pos_update = 0
+                snake.change_direction('LEFT')
             elif event.key == pygame.K_RIGHT:
-                x_pos_update = 10
-                y_pos_update = 0
+                snake.change_direction('RIGHT')
             elif event.key == pygame.K_UP:
-                x_pos_update = 0
-                y_pos_update = -10
+                snake.change_direction('UP')
             elif event.key == pygame.K_DOWN:
-                x_pos_update = 0
-                y_pos_update = 10
+                snake.change_direction('DOWN')
 
+    pos = snake.get_snakes_head()
     # Check for the border
     # Game Over if the snake hits the border
-    if ( x_pos < 0 or x_pos > 400) or ( y_pos < 0 or y_pos > 400 ):
+    if ( pos[0] < 0 or pos[0] > 400) or ( pos[1] < 0 or pos[1] > 400 ):
         game_over = True
         display_text( "Game Over", text_color )
         pygame.display.update()
         break
 
-    # Setup new direction of the snake
-    x_pos += x_pos_update
-    y_pos += y_pos_update
+    # Check if the snake reaches the food
+    if ( pos[0] == food.x_pos ) and ( pos[1] == food.y_pos ):
+        food.eaten()
+        snake.eat()
+        snake.score += 1
+    # Setup new position of the snake
+    else:
+        snake.update_position()
 
     # Draw and udpate the screen
     screen.fill( background_color )
-    pygame.draw.rect( screen, snake_color, [x_pos, y_pos, 10, 10] )
+    pygame.draw.rect( screen, food_color , [food.x_pos, food.y_pos, 10, 10] )
+    segs = snake.get_the_snake()
+    for seg in segs:
+        pygame.draw.rect( screen, snake_color, [seg[0], seg[1], 10, 10] )
+    display_score( str( snake.score ), text_color );
     pygame.display.update()
 
-    clock.tick(30)
+    clock.tick(20)
 
 # For Homepage setup - To be developed
 close_window = False
