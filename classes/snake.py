@@ -10,21 +10,26 @@ class Snake:
         self.segments = [position]
         self.x_pos_update = 10
         self.y_pos_update = 0
+        self.current_direction = 'RIGHT'
 
     # Update direction
     def change_direction( self, direction ):
-        if direction == 'LEFT':
+        if direction == 'LEFT' and self.current_direction != 'RIGHT':
             self.x_pos_update = -10
             self.y_pos_update = 0
-        elif direction == 'RIGHT':
+            self.current_direction = 'LEFT'
+        elif direction == 'RIGHT' and self.current_direction != 'LEFT':
             self.x_pos_update = 10
             self.y_pos_update = 0
-        elif direction == 'UP':
+            self.current_direction = 'RIGHT'
+        elif direction == 'UP' and self.current_direction != 'DOWN':
             self.x_pos_update = 0
             self.y_pos_update = -10
-        elif direction == 'DOWN':
+            self.current_direction = 'UP'
+        elif direction == 'DOWN' and self.current_direction != 'UP':
             self.x_pos_update = 0
             self.y_pos_update = 10
+            self.current_direction = 'DOWN'
 
     # Update position
     def update_position( self ):
@@ -37,13 +42,13 @@ class Snake:
 
     # Update segments when the snake eats the food
     def eat( self ):
-        copy_segments = self.segments.copy()
-        new_segment = copy_segments[0]
-        print( new_segment , ' ' , self.segments[0])
-        new_segment[0] += self.x_pos_update
-        new_segment[1] += self.y_pos_update
-        self.segments.insert( 0, new_segment)
-        print( new_segment , ' ' , self.segments[0])
+        self.segments.insert( 0, [self.segments[0][0] + self.x_pos_update, self.segments[0][1] + self.y_pos_update])
+
+    def killed( self ):
+        for i in range( 1, len( self.segments ) ):
+            if ( self.segments[0] == self.segments[i] ):
+                return True
+        return False
 
     # Get Snake first segment
     def get_snakes_head( self ):

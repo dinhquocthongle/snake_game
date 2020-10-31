@@ -67,9 +67,10 @@ while not game_over:
                 snake.change_direction('DOWN')
 
     pos = snake.get_snakes_head()
+    print(pos)
     # Check for the border
-    # Game Over if the snake hits the border
-    if ( pos[0] < 0 or pos[0] > 400) or ( pos[1] < 0 or pos[1] > 400 ):
+    # Game Over if the snake hits the border or hit its body
+    if ( ( pos[0] < 0 or pos[0] > 400) or ( pos[1] < 0 or pos[1] > 400 ) or snake.killed() ):
         game_over = True
         display_text( "Game Over", text_color )
         pygame.display.update()
